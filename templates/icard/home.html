@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CardG API | Carta digital y pedidos</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #090d16;
+      --panel: #111827;
+      --panel-soft: #172033;
+      --line: #263248;
+      --text: #f4f7fb;
+      --muted: #9ca9bf;
+      --accent: #f97316;
+      --accent-soft: #fb923c;
+      --ok: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(249, 115, 22, .18), transparent 34rem),
+        radial-gradient(circle at 88% 18%, rgba(59, 130, 246, .14), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    .page { max-width: 1120px; margin: 0 auto; padding: 48px 24px 56px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .02em; }
+    .brand-mark {
+      width: 42px; height: 42px; border-radius: 13px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--accent), #ef4444);
+      box-shadow: 0 12px 32px rgba(249, 115, 22, .28);
+      font-size: 18px;
+    }
+    .pill {
+      border: 1px solid rgba(52, 211, 153, .32);
+      background: rgba(52, 211, 153, .09);
+      color: var(--ok);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .hero { padding: 76px 0 40px; max-width: 760px; }
+    .eyebrow {
+      color: var(--accent-soft);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+    h1 span { color: var(--accent); }
+    .lead { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.7; max-width: 680px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 46px; padding: 0 18px;
+      border-radius: 12px; border: 1px solid var(--line);
+      color: var(--text); text-decoration: none; font-weight: 700; font-size: 14px;
+      background: var(--panel-soft);
+      transition: border-color .18s ease, transform .18s ease, background .18s ease;
+    }
+    .button:hover { transform: translateY(-1px); border-color: #41506b; background: #1b2740; }
+    .button.primary { background: var(--accent); border-color: var(--accent); color: #1a0d04; }
+    .button.primary:hover { background: var(--accent-soft); border-color: var(--accent-soft); }
+    .grid { display: grid; gap: 16px; }
+    .stats { grid-template-columns: repeat(5, minmax(0, 1fr)); margin-top: 20px; }
+    .card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(23, 32, 51, .9), rgba(17, 24, 39, .88));
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .18);
+    }
+    .stat-value { font-size: 34px; font-weight: 800; letter-spacing: -.04em; }
+    .stat-label { margin-top: 4px; color: var(--muted); font-size: 13px; }
+    .section-title { margin: 42px 0 14px; font-size: 18px; letter-spacing: -.01em; }
+    .endpoint-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .endpoint { display: flex; gap: 14px; align-items: flex-start; }
+    .method {
+      min-width: 54px; text-align: center;
+      border-radius: 8px; padding: 5px 7px;
+      background: rgba(52, 211, 153, .1); color: var(--ok);
+      font-size: 11px; font-weight: 800; letter-spacing: .08em;
+    }
+    .endpoint-code { font-family: "Cascadia Code", Consolas, monospace; font-size: 14px; }
+    .endpoint-desc { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .note {
+      margin-top: 26px; padding: 16px 18px;
+      border-left: 3px solid var(--accent);
+      background: rgba(249, 115, 22, .06);
+      border-radius: 0 12px 12px 0;
+      color: var(--muted); font-size: 14px; line-height: 1.6;
+    }
+    footer {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px;
+      margin-top: 48px; padding-top: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 13px;
+    }
+    footer a { color: var(--text); text-decoration: none; }
+    footer a:hover { color: var(--accent-soft); }
+    @media (max-width: 840px) {
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .endpoint-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .page { padding: 28px 18px 40px; }
+      .hero { padding: 54px 0 28px; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .topbar { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">CG</div>
+        <div>CardG <span style="color: var(--muted); font-weight: 500;">API</span></div>
+      </div>
+      <div class="pill">Demo pública</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">Django REST Framework</div>
+      <h1>Carta digital.<br><span>Pedidos sin fricción.</span></h1>
+      <p class="lead">
+        Backend REST para administrar categorías, productos, mesas, pedidos y pagos
+        de un restaurante. Esta edición pública incluye datos ficticios, autenticación
+        JWT y documentación interactiva.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="/docs/">Explorar Swagger UI</a>
+        <a class="button" href="/redoc/">Ver ReDoc</a>
+        <a class="button" href="/api/health/">Estado de la API</a>
+      </div>
+    </section>
+
+    <section class="grid stats" aria-label="Resumen de datos de demostración">
+      <article class="card"><div class="stat-value">{{ category_count }}</div><div class="stat-label">Categorías</div></article>
+      <article class="card"><div class="stat-value">{{ product_count }}</div><div class="stat-label">Productos</div></article>
+      <article class="card"><div class="stat-value">{{ table_count }}</div><div class="stat-label">Mesas</div></article>
+      <article class="card"><div class="stat-value">{{ order_count }}</div><div class="stat-label">Pedidos</div></article>
+      <article class="card"><div class="stat-value">{{ payment_count }}</div><div class="stat-label">Pagos</div></article>
+    </section>
+
+    <h2 class="section-title">Endpoints principales</h2>
+    <section class="grid endpoint-grid">
+      <article class="card endpoint">
+        <div class="method">GET</div>
+        <div><div class="endpoint-code">/api/categories/</div><div class="endpoint-desc">Categorías de la carta con imagen y productos asociados.</div></div>
+      </article>
+      <article class="card endpoint">
+        <div class="method">GET</div>
+        <div><div class="endpoint-code">/api/products/</div><div class="endpoint-desc">Productos activos, precios y filtros por categoría.</div></div>
+      </article>
+      <article class="card endpoint">
+        <div class="method">GET</div>
+        <div><div class="endpoint-code">/api/tables/</div><div class="endpoint-desc">Mesas del restaurante ordenadas por número.</div></div>
+      </article>
+      <article class="card endpoint">
+        <div class="method">POST</div>
+        <div><div class="endpoint-code">/api/orders/</div><div class="endpoint-desc">Pedidos con estado, mesa, producto y pago asociado.</div></div>
+      </article>
+      <article class="card endpoint">
+        <div class="method">POST</div>
+        <div><div class="endpoint-code">/api/payments/</div><div class="endpoint-desc">Pagos en efectivo o tarjeta, pendientes o completados.</div></div>
+      </article>
+      <article class="card endpoint">
+        <div class="method">POST</div>
+        <div><div class="endpoint-code">/api/auth/login/</div><div class="endpoint-desc">Inicio de sesión con JWT para operaciones de escritura.</div></div>
+      </article>
+    </section>
+
+    <div class="note">
+      Todos los datos de esta demostración son ficticios. Las operaciones de lectura
+      son públicas; crear, editar o eliminar requiere autenticación. Las cuentas de
+      demostración se describen en el README del repositorio.
+    </div>
+
+    <footer>
+      <div>CardG API v{{ version }} · Proyecto de portafolio</div>
+      <div><a href="/admin/">Administración</a> · <a href="/api/schema/">OpenAPI</a> · <a href="https://github.com/JosueLuceroG">GitHub</a></div>
+    </footer>
+  </main>
+</body>
+</html>
